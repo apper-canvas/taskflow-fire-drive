@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { toast } from 'react-toastify'
-import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, subWeeks, subMonths, parseISO, isValid } from 'date-fns'
+import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, subWeeks, subMonths, parseISO, isValid, isToday } from 'date-fns'
+
 import Chart from 'react-apexcharts'
 import ApperIcon from '../components/ApperIcon'
 import { FolderOpen, CheckSquare, Calendar, BarChart3 } from 'lucide-react'
@@ -198,6 +199,36 @@ const Dashboard = () => {
       .slice(0, 5)
   }
 
+
+  // Get today's tasks based on due date
+  const getTodaysTasks = () => {
+    const today = new Date()
+    return tasks.filter(task => {
+      if (!task.dueDate) return false
+      const dueDate = parseISO(task.dueDate)
+      return isValid(dueDate) && isToday(dueDate)
+    })
+  }
+
+  const todaysTasks = getTodaysTasks()
+
+  // Handle task status update from today's tasks
+  const handleTodayTaskStatusUpdate = (taskId, newStatus) => {
+    // Update localStorage tasks directly since we don't have the setter here
+    const savedTasks = localStorage.getItem('taskflow-tasks')
+    if (savedTasks) {
+      const allTasks = JSON.parse(savedTasks)
+      const updatedTasks = allTasks.map(task => 
+        task.id === taskId 
+          ? { ...task, status: newStatus, updatedAt: new Date().toISOString() }
+          : task
+      )
+      localStorage.setItem('taskflow-tasks', JSON.stringify(updatedTasks))
+      setTasks(updatedTasks)
+      toast.success(`Task status updated to ${newStatus}!`)
+    }
+  }
+
   const recentTasks = getRecentActivity()
 
   return (
@@ -367,6 +398,117 @@ const Dashboard = () => {
               </div>
             </div>
           </motion.div>
+
+          {/* Today's Tasks Section */}
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="mb-8"
+          >
+            <div className="dashboard-activity-card">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+                      <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                        Today's Tasks
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        {format(new Date(), 'EEEE, MMMM d, yyyy')}
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    to="/"
+                    className="text-primary dark:text-primary-light hover:underline text-sm font-medium"
+                  >
+                    View All Tasks
+                  </Link>
+                </div>
+                
+                {todaysTasks.length > 0 ? (
+                  <div className="space-y-3">
+                    {todaysTasks.map((task) => (
+                      <motion.div 
+                        key={task.id} 
+                        className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200"
+                        whileHover={{ scale: 1.01 }}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-3 h-3 rounded-full bg-${
+                            task.priority === 'high' ? 'red' : 
+                            task.priority === 'medium' ? 'amber' : 'green'
+                          }-500`}></div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                              {task.title}
+                            </p>
+                            <div className="flex items-center space-x-2 mt-1">
+                              <span className={`status-badge status-${task.status} text-xs`}>
+                                {task.status === 'todo' ? 'To Do' : 
+                                 task.status === 'progress' ? 'In Progress' : 
+                                 task.status === 'review' ? 'Review' : 'Done'}
+                              </span>
+                              <span className="text-xs text-slate-500 dark:text-slate-400">
+                                Due: {format(parseISO(task.dueDate), 'h:mm a')}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {/* Quick status update buttons */}
+                          <motion.button
+                            onClick={() => handleTodayTaskStatusUpdate(task.id, task.status === 'todo' ? 'progress' : task.status === 'progress' ? 'done' : 'todo')}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="p-2 text-slate-400 hover:text-primary dark:hover:text-primary-light transition-colors duration-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600"
+                            title={task.status === 'todo' ? 'Start Task' : task.status === 'progress' ? 'Complete Task' : 'Reset Task'}
+                          >
+                            <ApperIcon 
+                              name={task.status === 'todo' ? 'Play' : task.status === 'progress' ? 'CheckCircle' : 'RotateCcw'} 
+                              className="w-4 h-4" 
+                            />
+                          </motion.button>
+                          <motion.button
+                            onClick={() => {
+                              toast.info(`Opening task: ${task.title}`)
+                              // This would typically navigate to task details
+                            }}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="p-2 text-slate-400 hover:text-primary dark:hover:text-primary-light transition-colors duration-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600"
+                            title="View Task Details"
+                          >
+                            <ApperIcon name="Eye" className="w-4 h-4" />
+                          </motion.button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+                    <div className="w-16 h-16 bg-slate-200 dark:bg-slate-700 rounded-xl flex items-center justify-center mx-auto mb-4">
+                      <Calendar className="w-8 h-8 opacity-50" />
+                    </div>
+                    <h4 className="text-lg font-medium mb-2">No tasks due today</h4>
+                    <p className="text-sm">You're all caught up for today! 🎉</p>
+                    <Link
+                      to="/"
+                      className="inline-flex items-center space-x-2 mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors duration-200 text-sm font-medium"
+                    >
+                      <ApperIcon name="Plus" className="w-4 h-4" />
+                      <span>Add New Task</span>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+
 
           {/* Charts Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
