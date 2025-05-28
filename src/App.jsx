@@ -12,9 +12,8 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/tasks" element={<Home />} />
-
+        <Route path="/" element={<Home />} />
+        <Route path="/dashboard" element={<Dashboard />} />
 
         <Route path="/projects" element={<Projects />} />
 
