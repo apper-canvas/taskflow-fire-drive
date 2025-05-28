@@ -788,13 +788,13 @@ const Dashboard = () => {
 
           {/* Charts Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-<motion.div
-
-            {/* Status Distribution Chart */}
-            transition={{ duration: 0.6, delay: 0.3 }}
-
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
               className="dashboard-chart-card"
             >
+
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
                   Task Status Distribution
@@ -817,13 +817,13 @@ const Dashboard = () => {
               </div>
             </motion.div>
 
-<motion.div
-
-            {/* Priority Distribution Chart */}
-            transition={{ duration: 0.6, delay: 0.4 }}
-
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
               className="dashboard-chart-card"
             >
+
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
                   Priority Distribution
@@ -847,13 +847,13 @@ const Dashboard = () => {
             </motion.div>
           </div>
 
-<motion.div
-
-          {/* Status Category Cards */}
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
           >
+
             {/* To Do */}
             <div className="dashboard-category-card border-l-4 border-slate-500">
               <div className="p-6">
@@ -931,13 +931,13 @@ const Dashboard = () => {
             </div>
           </motion.div>
 
-<motion.div
-
-          {/* Recent Activity */}
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-
             className="dashboard-activity-card"
           >
+
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
