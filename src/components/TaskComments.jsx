@@ -95,17 +95,18 @@ const TaskComments = ({ taskId, comments = [], onUpdateComments }) => {
           Comments ({comments.length})
         </h4>
         <motion.button
+          type="button"
           onClick={() => {
-            setShowCommentForm(true)
+            setShowCommentForm(!showCommentForm)
             setCommentText('')
             setEditingComment(null)
           }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center space-x-1 text-sm text-primary hover:text-primary-dark transition-colors duration-200"
+          className="flex items-center space-x-1 text-sm text-primary hover:text-primary-dark transition-colors duration-200 cursor-pointer bg-primary/10 hover:bg-primary/20 px-3 py-2 rounded-lg"
         >
           <ApperIcon name="MessageCircle" className="w-4 h-4" />
-          <span>Add Comment</span>
+          <span>{showCommentForm ? 'Cancel' : 'Add Comment'}</span>
         </motion.button>
       </div>
 
