@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
-import { useState } from 'react'
-
 import { motion } from 'framer-motion'
 import ApperIcon from '../components/ApperIcon'
 
-import { FolderOpen, CheckSquare, Calendar, BarChart3 } from 'lucide-react'
+import { FolderOpen, CheckSquare, BarChart3 } from 'lucide-react'
+
+import { useState } from 'react'
+
+
 import MainFeature from '../components/MainFeature'
 import TeamMemberManager from '../components/TeamMemberManager'
 import TaskComments from '../components/TaskComments'
