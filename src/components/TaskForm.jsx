@@ -318,6 +318,24 @@ const TaskForm = ({
               </div>
             )}
           </div>
+          {/* Comments Section - Only show when editing existing task */}
+          {editingTask && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center space-x-2">
+                <ApperIcon name="MessageCircle" className="w-5 h-5" />
+                <span>Comments</span>
+              </h3>
+              <TaskComments
+                taskId={editingTask.id}
+                comments={formData.comments || []}
+                onUpdateComments={(updatedComments) => {
+                  setFormData(prev => ({ ...prev, comments: updatedComments }))
+                }}
+              />
+            </div>
+          )}
+
+
 
           {/* Form Actions */}
           <div className="flex justify-end space-x-4 pt-6 border-t border-slate-200 dark:border-slate-700">
@@ -346,20 +364,3 @@ const TaskForm = ({
 }
 
 export default TaskForm
-
-            {/* Comments Section - Only show when editing existing task */}
-            {editingTask && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center space-x-2">
-                  <ApperIcon name="MessageCircle" className="w-5 h-5" />
-                  <span>Comments</span>
-                </h3>
-                <TaskComments
-                  taskId={editingTask.id}
-                  comments={formData.comments || []}
-                  onUpdateComments={(updatedComments) => {
-                    setFormData(prev => ({ ...prev, comments: updatedComments }))
-                  }}
-                />
-              </div>
-            )}
