@@ -4,6 +4,8 @@ import { toast } from 'react-toastify'
 import ApperIcon from './ApperIcon'
 import CalendarPicker from './CalendarPicker'
 
+import TaskComments from './TaskComments'
+
 const TaskForm = ({ 
   showForm, 
   editingTask, 
@@ -344,3 +346,20 @@ const TaskForm = ({
 }
 
 export default TaskForm
+
+            {/* Comments Section - Only show when editing existing task */}
+            {editingTask && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center space-x-2">
+                  <ApperIcon name="MessageCircle" className="w-5 h-5" />
+                  <span>Comments</span>
+                </h3>
+                <TaskComments
+                  taskId={editingTask.id}
+                  comments={formData.comments || []}
+                  onUpdateComments={(updatedComments) => {
+                    setFormData(prev => ({ ...prev, comments: updatedComments }))
+                  }}
+                />
+              </div>
+            )}
