@@ -40,9 +40,12 @@ const CalendarPicker = ({
   const [isOpen, setIsOpen] = useState(false)
 
   const handleDateChange = (date) => {
-    onDateChange(date)
+    if (typeof onDateChange === 'function') {
+      onDateChange(date)
+    }
     setIsOpen(false)
   }
+
 
   const formatDisplayDate = (date) => {
     if (!date) return ''
