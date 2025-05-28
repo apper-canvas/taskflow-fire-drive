@@ -2,6 +2,8 @@ import { Routes, Route } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Home from './pages/Home'
+import MainFeature from './components/MainFeature'
+
 import Dashboard from './pages/Dashboard'
 
 import Projects from './pages/Projects'
@@ -14,6 +16,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/tasks" element={<MainFeature />} />
+
 
 
         <Route path="/projects" element={<Projects />} />
