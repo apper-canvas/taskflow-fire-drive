@@ -56,10 +56,10 @@ export default {
         'soft': '0 4px 20px rgba(0, 0, 0, 0.08)',
         'neu-light': '8px 8px 16px rgba(163, 177, 198, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.7)',
         'neu-dark': '8px 8px 16px rgba(0, 0, 0, 0.3), -8px -8px 16px rgba(255, 255, 255, 0.05)',
-        'card': '0 10px 25px rgba(0, 0, 0, 0.1)'
         'card': '0 10px 25px rgba(0, 0, 0, 0.1)',
 
-        xs: '2px'
+        'xs': '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+
       }
     }
   },
