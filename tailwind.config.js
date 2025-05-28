@@ -44,6 +44,15 @@ export default {
       borderRadius: {
         'xl': '0.75rem',
         '2xl': '1rem'
+      },
+      animation: {
+        'pulse-slow': 'pulse 3s ease-in-out infinite',
+        'bounce-subtle': 'bounce 1s ease-in-out 3'
+      },
+      transform: {
+        'rotate-1': 'rotate(1deg)',
+        'rotate-2': 'rotate(2deg)'
+
       }
     }
   },
