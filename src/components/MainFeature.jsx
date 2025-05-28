@@ -264,9 +264,10 @@ const MainFeature = () => {
             </div>
           )}
         </div>
-
-        </div>
       )}
+
+      {/* Create/Edit Task Modal */}
+
 
       {/* Create/Edit Task Modal */}
       <AnimatePresence>
