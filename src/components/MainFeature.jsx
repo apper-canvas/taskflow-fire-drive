@@ -5,6 +5,8 @@ import TaskStats from './TaskStats'
 import TaskControls from './TaskControls'
 import TaskCard from './TaskCard'
 import TaskForm from './TaskForm'
+import NotificationCenter from './NotificationCenter'
+
 import KanbanBoard from './KanbanBoard'
 
 const MainFeature = () => {
@@ -76,6 +78,26 @@ const MainFeature = () => {
     localStorage.setItem('taskflow-tasks', JSON.stringify(tasks))
   }, [tasks])
 
+  // Notification handler for task assignments
+  const handleTaskAssignment = (taskId, assigneeId) => {
+    if (assigneeId) {
+      const assignee = teamMembers.find(member => member.id === assigneeId)
+      const task = tasks.find(t => t.id === taskId)
+      
+      if (assignee && task) {
+        toast.info(`Task "${task.title}" assigned to ${assignee.name}`, {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true
+        })
+      }
+    }
+  }
+
+
   const resetForm = () => {
     setFormData({
       title: '',
@@ -119,10 +141,23 @@ const MainFeature = () => {
       setTasks([newTask, ...tasks])
       toast.success('Task created successfully!')
     }
+    // Check for assignment changes
+    if (editingTask) {
+      // Check if assignee changed
+      if (formData.assigneeId !== editingTask.assigneeId && formData.assigneeId) {
+        handleTaskAssignment(editingTask.id, formData.assigneeId)
+      }
+    } else if (formData.assigneeId) {
+      // New task with assignee
+      const newTaskId = Date.now().toString()
+      setTimeout(() => handleTaskAssignment(newTaskId, formData.assigneeId), 100)
+    }
 
     resetForm()
     setShowCreateForm(false)
+
   }
+
 
   const handleEdit = (task) => {
     setFormData({
@@ -224,6 +259,13 @@ const MainFeature = () => {
   return (
     <div className="max-w-7xl mx-auto">
       {/* Stats Dashboard */}
+      {/* Notification Center */}
+      <div className="flex justify-between items-center mb-6">
+        <div></div>
+        <NotificationCenter tasks={tasks} teamMembers={teamMembers} />
+      </div>
+
+
       <TaskStats tasks={tasks} />
 
       {/* Controls */}

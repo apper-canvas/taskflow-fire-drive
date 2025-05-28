@@ -4,8 +4,9 @@ import { motion } from 'framer-motion'
 import { format, isToday, isTomorrow, isYesterday, parseISO } from 'date-fns'
 import ApperIcon from './ApperIcon'
 
-const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onSubtaskToggle, statusOptions, priorityOptions, categoryOptions, teamMembers = [], isDragging = false }) => {
 
+
+const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onSubtaskToggle, statusOptions, priorityOptions, categoryOptions, teamMembers = [], isDragging = false }) => {
   const [showSubtasks, setShowSubtasks] = useState(false)
 
   const formatDueDate = (dateString) => {

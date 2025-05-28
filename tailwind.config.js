@@ -29,36 +29,31 @@ export default {
           700: '#334155',
           800: '#1e293b',
           900: '#0f172a'
+        },
+        notification: {
+          success: '#10b981',
+          warning: '#f59e0b',
+          error: '#ef4444',
+          info: '#3b82f6'
         }
       },
-      fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
-        heading: ['Inter', 'ui-sans-serif', 'system-ui']
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+        '100': '25rem',
+        '128': '32rem'
       },
-      boxShadow: {
-        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
-        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
-        'neu-light': '5px 5px 15px #d1d9e6, -5px -5px 15px #ffffff',
-        'neu-dark': '5px 5px 15px rgba(0, 0, 0, 0.3), -5px -5px 15px rgba(255, 255, 255, 0.05)'
+      maxWidth: {
+        '8xl': '88rem',
+        '9xl': '96rem'
       },
-      borderRadius: {
-        'xl': '0.75rem',
-        '2xl': '1rem'
+      minHeight: {
+        '16': '4rem',
+        '20': '5rem',
+        '24': '6rem'
       },
-      animation: {
-        'pulse-slow': 'pulse 3s ease-in-out infinite',
-        'bounce-subtle': 'bounce 1s ease-in-out 3'
-      },
-      zIndex: {
-        '60': '60',
-        '70': '70'
-      },
-
-
-      transform: {
-        'rotate-1': 'rotate(1deg)',
-        'rotate-2': 'rotate(2deg)'
-
+      backdropBlur: {
+        xs: '2px'
       }
     }
   },

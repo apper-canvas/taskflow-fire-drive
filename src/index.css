@@ -493,6 +493,105 @@
     @apply bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-light px-2 py-1 rounded-full text-xs font-medium;
   }
 
+  /* Notification Styles */
+  .notification-center {
+    @apply relative;
+  }
+
+  .notification-bell {
+    @apply relative p-2 rounded-lg transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-700;
+  }
+
+  .notification-badge {
+    @apply absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-5 h-5 flex items-center justify-center font-medium px-1;
+  }
+
+  .notification-panel {
+    @apply bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl;
+  }
+
+  .notification-panel-header {
+    @apply p-4 border-b border-slate-200 dark:border-slate-700;
+  }
+
+  .notification-list {
+    @apply max-h-80 overflow-y-auto;
+  }
+
+  .notification-item {
+    @apply p-3 transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer group;
+  }
+
+  .notification-item.unread {
+    @apply bg-primary/5 dark:bg-primary/10;
+  }
+
+  .notification-icon {
+    @apply flex-shrink-0;
+  }
+
+  .notification-content {
+    @apply flex-1 min-w-0;
+  }
+
+  .notification-title {
+    @apply text-sm font-medium text-slate-900 dark:text-white;
+  }
+
+  .notification-message {
+    @apply text-xs text-slate-700 dark:text-slate-300 line-clamp-2;
+  }
+
+  .notification-meta {
+    @apply flex items-center justify-between text-xs text-slate-400 dark:text-slate-500;
+  }
+
+  .notification-time {
+    @apply text-xs text-slate-400 dark:text-slate-500;
+  }
+
+  .notification-assignee {
+    @apply text-xs text-slate-400 dark:text-slate-500;
+  }
+
+  .notification-close {
+    @apply p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-0 group-hover:opacity-100 transition-all duration-200;
+  }
+
+  .notification-empty {
+    @apply text-center py-8;
+  }
+
+  .notification-type-overdue {
+    @apply border-l-red-500;
+  }
+
+  .notification-type-due-today {
+    @apply border-l-amber-500;
+  }
+
+  .notification-type-due-tomorrow {
+    @apply border-l-blue-500;
+  }
+
+  .notification-type-assignment {
+    @apply border-l-green-500;
+  }
+
+  .notification-priority-high {
+    @apply border-l-red-500;
+  }
+
+  .notification-priority-medium {
+    @apply border-l-amber-500;
+  }
+
+  .notification-priority-low {
+    @apply border-l-blue-500;
+  }
+
+
+
 
 
 
