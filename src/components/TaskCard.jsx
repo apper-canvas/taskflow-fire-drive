@@ -4,7 +4,8 @@ import { motion } from 'framer-motion'
 import { format, isToday, isTomorrow, isYesterday, parseISO } from 'date-fns'
 import ApperIcon from './ApperIcon'
 
-const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onSubtaskToggle, statusOptions, priorityOptions, categoryOptions, isDragging = false }) => {
+const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onSubtaskToggle, statusOptions, priorityOptions, categoryOptions, teamMembers = [], isDragging = false }) => {
+
   const [showSubtasks, setShowSubtasks] = useState(false)
 
   const formatDueDate = (dateString) => {
@@ -43,6 +44,15 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onSubtaskToggle, sta
     
     return { completed, total, percentage }
   }
+
+
+  const getAssignee = () => {
+    if (!task.assigneeId || !teamMembers.length) return null
+    return teamMembers.find(member => member.id === task.assigneeId)
+  }
+
+  const assignee = getAssignee()
+  const commentCount = task.comments ? task.comments.length : 0
 
   const subtaskProgress = getSubtaskProgress()
 
@@ -174,6 +184,33 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onSubtaskToggle, sta
           )}
         </div>
       )}
+
+      {/* Assignment and Comments Section */}
+      {(assignee || commentCount > 0) && (
+        <div className="assignment-section">
+          <div className="flex items-center justify-between">
+            {assignee && (
+              <div className="assignee-indicator">
+                <div className="assignee-avatar placeholder bg-gradient-to-r from-primary to-primary-light text-white flex items-center justify-center text-xs font-semibold">
+                  {assignee.avatar ? (
+                    <img src={assignee.avatar} alt={assignee.name} className="assignee-avatar" />
+                  ) : (
+                    assignee.name.charAt(0).toUpperCase()
+                  )}
+                </div>
+                <span className="assignee-name">{assignee.name}</span>
+              </div>
+            )}
+            {commentCount > 0 && (
+              <div className="comment-count-badge">
+                <ApperIcon name="MessageCircle" className="w-3 h-3 inline mr-1" />
+                {commentCount}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
 
 
 

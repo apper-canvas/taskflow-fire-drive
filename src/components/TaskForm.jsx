@@ -15,6 +15,8 @@ const TaskForm = ({
   priorityOptions, 
   categoryOptions 
 }) => {
+  const [teamMembers, setTeamMembers] = useState([])
+
   const [projects, setProjects] = useState([])
   const [subtaskInput, setSubtaskInput] = useState('')
   const [showSubtaskForm, setShowSubtaskForm] = useState(false)
@@ -25,6 +27,11 @@ const TaskForm = ({
     if (savedProjects) {
       setProjects(JSON.parse(savedProjects))
     }
+    const savedMembers = localStorage.getItem('taskflow-team-members')
+    if (savedMembers) {
+      setTeamMembers(JSON.parse(savedMembers))
+    }
+
   }, [])
 
   const handleChange = (e) => {
@@ -153,6 +160,27 @@ const TaskForm = ({
               ))}
             </select>
           </div>
+
+          {/* Assignee Selection */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Assign To
+            </label>
+            <select
+              name="assigneeId"
+              value={formData.assigneeId || ''}
+              onChange={handleChange}
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+            >
+              <option value="">Unassigned</option>
+              {teamMembers.map(member => (
+                <option key={member.id} value={member.id}>
+                  {member.name} ({member.role})
+                </option>
+              ))}
+            </select>
+          </div>
+
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Priority */}

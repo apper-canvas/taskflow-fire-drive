@@ -9,6 +9,8 @@ import KanbanBoard from './KanbanBoard'
 
 const MainFeature = () => {
   const [tasks, setTasks] = useState([])
+  const [teamMembers, setTeamMembers] = useState([])
+
   const [projects, setProjects] = useState([])
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
@@ -26,6 +28,9 @@ const MainFeature = () => {
     status: 'todo',
     dueDate: '',
     category: 'work',
+    assigneeId: '',
+    comments: [],
+
     projectId: '',
     subtasks: []
   })
@@ -44,6 +49,20 @@ const MainFeature = () => {
     if (savedProjects) {
       setProjects(JSON.parse(savedProjects))
     }
+
+  // Load team members from localStorage on mount
+  useEffect(() => {
+    const savedMembers = localStorage.getItem('taskflow-team-members')
+    if (savedMembers) {
+      setTeamMembers(JSON.parse(savedMembers))
+    }
+  }, [])
+
+  // Save team members to localStorage whenever team members change
+  useEffect(() => {
+    localStorage.setItem('taskflow-team-members', JSON.stringify(teamMembers))
+  }, [teamMembers])
+
   }, [])
 
   // Save projects to localStorage whenever projects change
@@ -65,6 +84,9 @@ const MainFeature = () => {
       status: 'todo',
       dueDate: '',
       category: 'work',
+      assigneeId: '',
+      comments: [],
+
       projectId: '',
       subtasks: []
     })
@@ -110,6 +132,9 @@ const MainFeature = () => {
       status: task.status,
       dueDate: task.dueDate,
       category: task.category,
+      assigneeId: task.assigneeId || '',
+      comments: task.comments || [],
+
       projectId: task.projectId || '',
       subtasks: task.subtasks || []
     })
