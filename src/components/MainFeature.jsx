@@ -222,15 +222,12 @@ const MainFeature = () => {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onStatusChange={handleStatusChange}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onStatusChange={handleStatusChange}
                 onSubtaskToggle={handleSubtaskToggle}
                 statusOptions={statusOptions}
                 priorityOptions={priorityOptions}
                 categoryOptions={categoryOptions}
+              />
 
-              </TaskCard>
             
             ))}
           </AnimatePresence>
