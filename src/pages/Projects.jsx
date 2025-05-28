@@ -27,6 +27,7 @@ const Projects = () => {
 
   // Get task statistics for a project
   const getProjectStats = (projectId) => {
+    const projectTasks = tasks.filter(task => task.projectId === projectId)
     const completed = projectTasks.filter(task => task.status === 'done').length
     const inProgress = projectTasks.filter(task => task.status === 'progress').length
     const pending = projectTasks.filter(task => task.status === 'todo').length
@@ -34,6 +35,7 @@ const Projects = () => {
     
     return { total, completed, inProgress, pending }
   }
+
 
   // Handle create project
   const handleCreateProject = (projectData) => {
