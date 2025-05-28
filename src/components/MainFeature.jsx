@@ -284,6 +284,7 @@ const MainFeature = () => {
           statusOptions={statusOptions}
           priorityOptions={priorityOptions}
           categoryOptions={categoryOptions}
+          projects={projects}
         />
       </AnimatePresence>
     </div>

@@ -11,7 +11,10 @@ const TaskControls = ({
   onNewTask,
   viewMode,
   setViewMode,
-  statusOptions 
+  statusOptions,
+  selectedProject,
+  setSelectedProject,
+  projects
 }) => {
   return (
     <motion.div 
@@ -44,6 +47,17 @@ const TaskControls = ({
               <option value="all">All Status</option>
               {statusOptions.map(status => (
                 <option key={status.value} value={status.value}>{status.label}</option>
+              ))}
+            </select>
+
+            <select
+              value={selectedProject}
+              onChange={(e) => setSelectedProject(e.target.value)}
+              className="px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+            >
+              <option value="all">All Projects</option>
+              {projects.map(project => (
+                <option key={project.id} value={project.id}>{project.name}</option>
               ))}
             </select>
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Edit2, Trash2, FolderOpen, Calendar, CheckCircle, Clock, AlertCircle } from 'lucide-react'
+import { Plus, Edit2, Trash2, FolderOpen, Calendar, CheckCircle, Clock, AlertCircle, ArrowLeft } from 'lucide-react'
 import { toast } from 'react-toastify'
 
 const Projects = () => {
@@ -12,25 +13,24 @@ const Projects = () => {
 
   // Load projects and tasks from localStorage
   useEffect(() => {
-    const savedProjects = JSON.parse(localStorage.getItem('projects') || '[]')
-    const savedTasks = JSON.parse(localStorage.getItem('tasks') || '[]')
+    const savedProjects = JSON.parse(localStorage.getItem('taskflow-projects') || '[]')
+    const savedTasks = JSON.parse(localStorage.getItem('taskflow-tasks') || '[]')
     setProjects(savedProjects)
     setTasks(savedTasks)
   }, [])
 
   // Save projects to localStorage
   const saveProjects = (newProjects) => {
-    localStorage.setItem('projects', JSON.stringify(newProjects))
+    localStorage.setItem('taskflow-projects', JSON.stringify(newProjects))
     setProjects(newProjects)
   }
 
   // Get task statistics for a project
   const getProjectStats = (projectId) => {
-    const projectTasks = tasks.filter(task => task.projectId === projectId)
+    const completed = projectTasks.filter(task => task.status === 'done').length
+    const inProgress = projectTasks.filter(task => task.status === 'progress').length
+    const pending = projectTasks.filter(task => task.status === 'todo').length
     const total = projectTasks.length
-    const completed = projectTasks.filter(task => task.status === 'completed').length
-    const inProgress = projectTasks.filter(task => task.status === 'in-progress').length
-    const pending = projectTasks.filter(task => task.status === 'pending').length
     
     return { total, completed, inProgress, pending }
   }
@@ -76,7 +76,7 @@ const Projects = () => {
         ? { ...task, projectId: null, project: null }
         : task
     )
-    localStorage.setItem('tasks', JSON.stringify(updatedTasks))
+    localStorage.setItem('taskflow-tasks', JSON.stringify(updatedTasks))
     setTasks(updatedTasks)
     
     setDeleteConfirm(null)
@@ -102,26 +102,54 @@ const Projects = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      {/* Navigation Header */}
+      <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-white/20 dark:border-slate-700/50 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Back to Tasks */}
+            <Link
+              to="/"
+              className="flex items-center space-x-2 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary-light transition-colors duration-200"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span className="font-medium">Back to Tasks</span>
+            </Link>
+
+            {/* Logo/Brand */}
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-primary to-primary-light rounded-lg flex items-center justify-center">
+                <FolderOpen className="w-5 h-5 text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+                Projects
+              </h1>
+            </div>
+
+            {/* Create Project Button */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setIsCreateModalOpen(true)}
+              className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-light text-white px-4 py-2 rounded-xl font-medium transition-colors duration-200 shadow-soft"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Create Project</span>
+            </motion.button>
+          </div>
+        </div>
+      </header>
+
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Projects
+              Project Management
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Organize and manage your projects
+              Organize and manage your projects efficiently
             </p>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-colors duration-200 shadow-lg"
-          >
-            <Plus className="w-5 h-5" />
-            Create Project
-          </motion.button>
         </div>
 
         {/* Projects Grid */}

@@ -1,9 +1,8 @@
-import { motion } from 'framer-motion'
-import { useState } from 'react'
-
-import CalendarPicker from './CalendarPicker'
-
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { toast } from 'react-toastify'
 import ApperIcon from './ApperIcon'
+import CalendarPicker from './CalendarPicker'
 
 const TaskForm = ({ 
   showForm, 
@@ -14,9 +13,65 @@ const TaskForm = ({
   onClose, 
   statusOptions, 
   priorityOptions, 
-  categoryOptions,
-  projects = []
+  categoryOptions 
 }) => {
+  const [projects, setProjects] = useState([])
+  const [subtaskInput, setSubtaskInput] = useState('')
+  const [showSubtaskForm, setShowSubtaskForm] = useState(false)
+
+  // Load projects from localStorage
+  useEffect(() => {
+    const savedProjects = localStorage.getItem('taskflow-projects')
+    if (savedProjects) {
+      setProjects(JSON.parse(savedProjects))
+    }
+  }, [])
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleDateChange = (date) => {
+    setFormData(prev => ({ 
+      ...prev, 
+      dueDate: date ? date.toISOString().split('T')[0] : '' 
+    }))
+  }
+
+  const addSubtask = () => {
+    if (!subtaskInput.trim()) {
+      toast.error('Please enter a subtask title')
+      return
+    }
+
+    const newSubtask = {
+      id: Date.now().toString(),
+      title: subtaskInput.trim(),
+      completed: false
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      subtasks: [...(prev.subtasks || []), newSubtask]
+    }))
+
+    setSubtaskInput('')
+    toast.success('Subtask added!')
+  }
+
+  const removeSubtask = (subtaskId) => {
+    setFormData(prev => ({
+      ...prev,
+      subtasks: prev.subtasks.filter(subtask => subtask.id !== subtaskId)
+    }))
+    toast.success('Subtask removed!')
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    onSubmit(e)
+  }
 
   if (!showForm) return null
 
@@ -32,9 +87,8 @@ const TaskForm = ({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        transition={{ type: "spring", damping: 15, stiffness: 300 }}
-        className="bg-white dark:bg-slate-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl"
         onClick={(e) => e.stopPropagation()}
+        className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
@@ -50,104 +104,47 @@ const TaskForm = ({
           </motion.button>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Task Title */}
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Task Title *
             </label>
             <input
               type="text"
+              name="title"
               value={formData.title}
-              onChange={(e) => setFormData({...formData, title: e.target.value})}
+              onChange={handleChange}
               className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
-              placeholder="Enter task title..."
+              placeholder="Enter task title"
+              required
             />
           </div>
 
+          {/* Task Description */}
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Description
             </label>
             <textarea
+              name="description"
               value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              onChange={handleChange}
               rows={3}
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 resize-none"
-              placeholder="Task description..."
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+              placeholder="Enter task description"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Priority
-              </label>
-              <select
-                value={formData.priority}
-                onChange={(e) => setFormData({...formData, priority: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
-              >
-                {priorityOptions.map(priority => (
-                  <option key={priority.value} value={priority.value}>{priority.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Status
-              </label>
-              <select
-                value={formData.status}
-                onChange={(e) => setFormData({...formData, status: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
-              >
-                {statusOptions.map(status => (
-                  <option key={status.value} value={status.value}>{status.label}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Due Date
-              </label>
-              <CalendarPicker
-                selectedDate={formData.dueDate}
-                onDateChange={(date) => {
-                  const formattedDate = date ? date.toISOString().split('T')[0] : ''
-                  setFormData({...formData, dueDate: formattedDate})
-                }}
-                placeholder="Select due date..."
-                minDate={new Date()}
-              />
-
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Category
-              </label>
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({...formData, category: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
-              >
-                {categoryOptions.map(category => (
-                  <option key={category.value} value={category.value}>{category.label}</option>
-                ))}
-              </select>
-            </div>
-          </div>
+          {/* Project Assignment */}
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Project
             </label>
             <select
-              value={formData.projectId || ''}
-              onChange={(e) => setFormData({...formData, projectId: e.target.value})}
+              name="projectId"
+              value={formData.projectId}
+              onChange={handleChange}
               className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
             >
               <option value="">No Project</option>
@@ -157,69 +154,149 @@ const TaskForm = ({
             </select>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Priority */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Priority
+              </label>
+              <select
+                name="priority"
+                value={formData.priority}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+              >
+                {priorityOptions.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </div>
 
+            {/* Status */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Status
+              </label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+              >
+                {statusOptions.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Category
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+              >
+                {categoryOptions.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Due Date */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Due Date
+            </label>
+            <CalendarPicker
+              value={formData.dueDate ? new Date(formData.dueDate) : null}
+              onChange={handleDateChange}
+              placeholder="Select due date"
+            />
+          </div>
 
           {/* Subtasks Section */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Subtasks
-            </label>
-            <div className="subtask-form">
-              <div className="space-y-2">
-                {formData.subtasks && formData.subtasks.map((subtask, index) => (
-                  <div key={index} className="flex items-center space-x-2">
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                Subtasks ({(formData.subtasks || []).length})
+              </label>
+              <motion.button
+                type="button"
+                onClick={() => setShowSubtaskForm(!showSubtaskForm)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center space-x-1 text-sm text-primary hover:text-primary-dark transition-colors duration-200"
+              >
+                <ApperIcon name="Plus" className="w-4 h-4" />
+                <span>Add Subtask</span>
+              </motion.button>
+            </div>
+
+            <AnimatePresence>
+              {showSubtaskForm && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="subtask-form mb-4"
+                >
+                  <div className="flex gap-2">
                     <input
                       type="text"
-                      value={subtask.title}
-                      onChange={(e) => {
-                        const newSubtasks = [...formData.subtasks]
-                        newSubtasks[index] = { ...subtask, title: e.target.value }
-                        setFormData({...formData, subtasks: newSubtasks})
-                      }}
-                      className="subtask-input"
-                      placeholder="Subtask description..."
+                      value={subtaskInput}
+                      onChange={(e) => setSubtaskInput(e.target.value)}
+                      className="subtask-input flex-1"
+                      placeholder="Enter subtask title"
+                      onKeyPress={(e) => e.key === 'Enter' && addSubtask()}
                     />
                     <motion.button
                       type="button"
-                      onClick={() => {
-                        const newSubtasks = formData.subtasks.filter((_, i) => i !== index)
-                        setFormData({...formData, subtasks: newSubtasks})
-                      }}
+                      onClick={addSubtask}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors duration-200"
+                    >
+                      Add
+                    </motion.button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Subtasks List */}
+            {formData.subtasks && formData.subtasks.length > 0 && (
+              <div className="subtask-list">
+                {formData.subtasks.map((subtask) => (
+                  <div key={subtask.id} className="subtask-item">
+                    <span className="subtask-text">{subtask.title}</span>
+                    <motion.button
+                      type="button"
+                      onClick={() => removeSubtask(subtask.id)}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      className="p-1 text-red-500 hover:text-red-600 transition-colors duration-200"
+                      className="p-1 text-slate-400 hover:text-red-500 transition-colors duration-200"
                     >
-                      <ApperIcon name="X" className="w-4 h-4" />
+                      <ApperIcon name="Trash2" className="w-4 h-4" />
                     </motion.button>
                   </div>
                 ))}
               </div>
-              <motion.button
-                type="button"
-                onClick={() => {
-                  const newSubtasks = [...(formData.subtasks || []), { id: Date.now().toString(), title: '', completed: false }]
-                  setFormData({...formData, subtasks: newSubtasks})
-                }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="subtask-add-button"
-              >
-                <div className="flex items-center justify-center space-x-2">
-                  <ApperIcon name="Plus" className="w-4 h-4" />
-                  <span>Add Subtask</span>
-                </div>
-              </motion.button>
-            </div>
+            )}
           </div>
 
-
-          <div className="flex space-x-3 pt-4">
+          {/* Form Actions */}
+          <div className="flex justify-end space-x-4 pt-6 border-t border-slate-200 dark:border-slate-700">
             <motion.button
               type="button"
               onClick={onClose}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex-1 px-6 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-all duration-300"
+              className="px-6 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all duration-300"
             >
               Cancel
             </motion.button>
@@ -227,7 +304,7 @@ const TaskForm = ({
               type="submit"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-primary to-primary-light text-white font-medium rounded-xl shadow-soft hover:shadow-card transition-all duration-300"
+              className="px-8 py-3 bg-gradient-to-r from-primary to-primary-light text-white font-medium rounded-xl shadow-soft hover:shadow-card transition-all duration-300"
             >
               {editingTask ? 'Update Task' : 'Create Task'}
             </motion.button>
