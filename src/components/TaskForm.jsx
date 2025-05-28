@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion'
+import CalendarPicker from './CalendarPicker'
+
 import ApperIcon from './ApperIcon'
 
 const TaskForm = ({ 
@@ -108,12 +110,16 @@ const TaskForm = ({
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Due Date
               </label>
-              <input
-                type="date"
-                value={formData.dueDate}
-                onChange={(e) => setFormData({...formData, dueDate: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+              <CalendarPicker
+                selectedDate={formData.dueDate}
+                onDateChange={(date) => {
+                  const formattedDate = date ? date.toISOString().split('T')[0] : ''
+                  setFormData({...formData, dueDate: formattedDate})
+                }}
+                placeholder="Select due date..."
+                minDate={new Date()}
               />
+
             </div>
 
             <div>

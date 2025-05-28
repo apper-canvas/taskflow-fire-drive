@@ -97,6 +97,110 @@
     @apply opacity-100 animate-pulse;
   }
 
+
+  /* Calendar Component Styles */
+  .calendar-picker-container .react-datepicker-wrapper {
+    @apply w-full;
+  }
+
+  .calendar-popper {
+    @apply z-50;
+  }
+
+  .custom-calendar {
+    @apply bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-2xl;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .react-datepicker__header {
+    @apply bg-gradient-to-r from-primary to-primary-light text-white border-none rounded-t-xl;
+  }
+
+  .react-datepicker__current-month {
+    @apply text-white font-semibold text-lg;
+  }
+
+  .react-datepicker__day-name {
+    @apply text-white/80 font-medium text-sm;
+  }
+
+  .react-datepicker__navigation {
+    @apply top-4;
+  }
+
+  .react-datepicker__navigation--previous {
+    @apply left-4;
+  }
+
+  .react-datepicker__navigation--next {
+    @apply right-4;
+  }
+
+  .react-datepicker__navigation-icon::before {
+    @apply border-white;
+  }
+
+  .react-datepicker__day {
+    @apply text-slate-700 dark:text-slate-300 hover:bg-primary/10 dark:hover:bg-primary/20 rounded-lg transition-all duration-200 font-medium;
+  }
+
+  .react-datepicker__day--selected {
+    @apply bg-primary text-white hover:bg-primary-dark;
+  }
+
+  .react-datepicker__day--today {
+    @apply bg-accent/20 text-accent-dark font-bold;
+  }
+
+  .react-datepicker__day--outside-month {
+    @apply text-slate-400 dark:text-slate-600;
+  }
+
+  .react-datepicker__day--disabled {
+    @apply text-slate-300 dark:text-slate-700 cursor-not-allowed hover:bg-transparent;
+  }
+
+  .react-datepicker__day--keyboard-selected {
+    @apply bg-primary/20 text-primary-dark;
+  }
+
+  .react-datepicker__month-container {
+    @apply rounded-xl;
+  }
+
+  .react-datepicker__month {
+    @apply p-4;
+  }
+
+  .react-datepicker__week {
+    @apply flex justify-between;
+  }
+
+  .react-datepicker__day {
+    @apply w-8 h-8 flex items-center justify-center text-sm;
+  }
+
+  /* Dark mode calendar styles */
+  .dark .custom-calendar {
+    @apply bg-slate-800 border-slate-600;
+  }
+
+  .dark .react-datepicker__day {
+    @apply text-slate-300;
+  }
+
+  .dark .react-datepicker__day--today {
+    @apply bg-accent/30 text-accent;
+  }
+
+  .dark .react-datepicker__day--outside-month {
+    @apply text-slate-600;
+  }
+
+  .dark .react-datepicker__day--disabled {
+    @apply text-slate-700;
+  }
+
 }
 
 @layer utilities {

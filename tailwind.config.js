@@ -49,6 +49,13 @@ export default {
         'pulse-slow': 'pulse 3s ease-in-out infinite',
         'bounce-subtle': 'bounce 1s ease-in-out 3'
       },
+      zIndex: {
+        '60': '60',
+        '70': '70'
+        '70': '70'
+      },
+
+
       transform: {
         'rotate-1': 'rotate(1deg)',
         'rotate-2': 'rotate(2deg)'
