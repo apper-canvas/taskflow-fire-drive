@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-toastify'
 import { format, isToday, isTomorrow, parseISO, isPast } from 'date-fns'
@@ -10,7 +11,8 @@ const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
   const [showDetailsModal, setShowDetailsModal] = useState(false)
 
   const [showPanel, setShowPanel] = useState(false)
-  const [lastCheck, setLastCheck] = useState(Date.now())
+  const lastCheckRef = useRef(Date.now())
+
 
   // Load notifications from localStorage
   useEffect(() => {
@@ -32,10 +34,12 @@ const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
   }, [notifications])
 
   // Check for due date reminders and assignment notifications
+  // Check for due date reminders and assignment notifications
   useEffect(() => {
     const checkNotifications = () => {
       const now = new Date()
       const newNotifications = []
+      const currentNotifications = notifications // Create a local reference
 
       tasks.forEach(task => {
         if (!task.dueDate) return
@@ -44,7 +48,7 @@ const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
         const notificationId = `due-${task.id}-${task.dueDate}`
         
         // Check if we already have this notification
-        const existingNotification = notifications.find(n => n.id === notificationId)
+        const existingNotification = currentNotifications.find(n => n.id === notificationId)
         if (existingNotification) return
 
         // Overdue tasks
@@ -105,12 +109,12 @@ const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
         const timeDiff = now - updatedAt
         const fiveMinutesAgo = 5 * 60 * 1000
 
-        if (timeDiff <= fiveMinutesAgo && updatedAt > new Date(lastCheck)) {
+        if (timeDiff <= fiveMinutesAgo && updatedAt > new Date(lastCheckRef.current)) {
           const assignee = teamMembers.find(m => m.id === task.assigneeId)
           const notificationId = `assignment-${task.id}-${task.updatedAt}`
           
           // Check if we already have this notification
-          const existingNotification = notifications.find(n => n.id === notificationId)
+          const existingNotification = currentNotifications.find(n => n.id === notificationId)
           if (existingNotification) return
 
           if (assignee) {
@@ -157,7 +161,7 @@ const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
         })
       }
 
-      setLastCheck(Date.now())
+      lastCheckRef.current = Date.now()
     }
 
     // Initial check
@@ -167,7 +171,8 @@ const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
     const interval = setInterval(checkNotifications, 30000)
 
     return () => clearInterval(interval)
-  }, [tasks, teamMembers, notifications, lastCheck])
+  }, [tasks, teamMembers]) // Removed notifications and lastCheck from dependencies
+
 
   const unreadCount = notifications.filter(n => !n.isRead).length
 
