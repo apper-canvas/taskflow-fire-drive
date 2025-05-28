@@ -8,6 +8,9 @@ import ApperIcon from './ApperIcon'
 const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
   const [notifications, setNotifications] = useState([])
   const [selectedNotification, setSelectedNotification] = useState(null)
+  const [showTaskDetailsModal, setShowTaskDetailsModal] = useState(false)
+  const [selectedTask, setSelectedTask] = useState(null)
+
   const [showDetailsModal, setShowDetailsModal] = useState(false)
 
   const [showPanel, setShowPanel] = useState(false)
@@ -226,12 +229,19 @@ const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
   }
 
   const handleViewTask = (taskId) => {
-    // This would typically navigate to the task details page
-    // For now, we'll show a toast message
-    toast.info(`Navigate to task: ${taskId}`)
-    setShowDetailsModal(false)
-    setSelectedNotification(null)
+    // Find the actual task
+    const task = tasks.find(t => t.id === taskId)
+    if (task) {
+      setSelectedTask(task)
+      setShowTaskDetailsModal(true)
+      setShowDetailsModal(false)
+      setSelectedNotification(null)
+      toast.success('Opening task details')
+    } else {
+      toast.error('Task not found')
+    }
   }
+
 
   const getTaskStatusColor = (status) => {
     switch (status) {
@@ -611,6 +621,216 @@ const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
                 >
                   <ApperIcon name="Trash2" className="w-4 h-4 mr-1" />
                   Delete
+                </motion.button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+
+      {/* Task Details Modal */}
+      <AnimatePresence>
+        {showTaskDetailsModal && selectedTask && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Modal Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setShowTaskDetailsModal(false)}
+            />
+            
+            {/* Modal Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", duration: 0.3 }}
+              className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden"
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 rounded-lg bg-primary/10 dark:bg-primary/20">
+                    <ApperIcon name="Eye" className="w-5 h-5 text-primary dark:text-primary-light" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                      Task Details
+                    </h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      Complete task information
+                    </p>
+                  </div>
+                </div>
+                <motion.button
+                  onClick={() => setShowTaskDetailsModal(false)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                >
+                  <ApperIcon name="X" className="w-5 h-5" />
+                </motion.button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+                {/* Task Title */}
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                    {selectedTask.title}
+                  </h2>
+                  {selectedTask.description && (
+                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                      {selectedTask.description}
+                    </p>
+                  )}
+                </div>
+
+                {/* Status and Priority Badges */}
+                <div className="flex items-center space-x-3">
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getTaskStatusColor(selectedTask.status)}`}>
+                    {selectedTask.status.charAt(0).toUpperCase() + selectedTask.status.slice(1)}
+                  </span>
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(selectedTask.priority)}`}>
+                    {selectedTask.priority.charAt(0).toUpperCase() + selectedTask.priority.slice(1)} Priority
+                  </span>
+                </div>
+
+                {/* Task Details Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Due Date */}
+                  {selectedTask.dueDate && (
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        Due Date
+                      </label>
+                      <div className={`flex items-center space-x-2 p-3 rounded-lg border ${
+                        new Date(selectedTask.dueDate) < new Date() && !isToday(parseISO(selectedTask.dueDate))
+                          ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20'
+                          : isToday(parseISO(selectedTask.dueDate))
+                          ? 'border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-900/20'
+                          : 'border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-700/50'
+                      }`}>
+                        <ApperIcon name="Calendar" className="w-4 h-4" />
+                        <span className="text-sm font-medium">
+                          {format(parseISO(selectedTask.dueDate), 'MMM d, yyyy')}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Category */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Category
+                    </label>
+                    <div className="flex items-center space-x-2 p-3 rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-700/50">
+                      <ApperIcon name="Tag" className="w-4 h-4" />
+                      <span className="text-sm font-medium capitalize">
+                        {selectedTask.category}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Assignee */}
+                  {selectedTask.assigneeId && (
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        Assigned To
+                      </label>
+                      <div className="flex items-center space-x-3 p-3 rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-700/50">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-primary-light text-white flex items-center justify-center text-sm font-semibold">
+                          {(() => {
+                            const assignee = teamMembers.find(m => m.id === selectedTask.assigneeId)
+                            return assignee ? assignee.name.charAt(0).toUpperCase() : '?'
+                          })()}
+                        </div>
+                        <span className="text-sm font-medium">
+                          {(() => {
+                            const assignee = teamMembers.find(m => m.id === selectedTask.assigneeId)
+                            return assignee ? assignee.name : 'Unknown'
+                          })()}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Created Date */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Created
+                    </label>
+                    <div className="flex items-center space-x-2 p-3 rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-700/50">
+                      <ApperIcon name="Clock" className="w-4 h-4" />
+                      <span className="text-sm">
+                        {new Date(selectedTask.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Subtasks Progress */}
+                {selectedTask.subtasks && selectedTask.subtasks.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+                      Subtasks Progress
+                    </label>
+                    <div className="space-y-3">
+                      {(() => {
+                        const completed = selectedTask.subtasks.filter(st => st.completed).length
+                        const total = selectedTask.subtasks.length
+                        const percentage = total > 0 ? Math.round((completed / total) * 100) : 0
+                        return (
+                          <>
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-slate-600 dark:text-slate-400">
+                                {completed} of {total} completed
+                              </span>
+                              <span className="font-medium text-primary dark:text-primary-light">
+                                {percentage}%
+                              </span>
+                            </div>
+                            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
+                              <div 
+                                className="h-full bg-gradient-to-r from-primary to-primary-light rounded-full transition-all duration-500"
+                                style={{ width: `${percentage}%` }}
+                              ></div>
+                            </div>
+                          </>
+                        )
+                      })()}
+                    </div>
+                  </div>
+                )}
+
+                {/* Comments Count */}
+                {selectedTask.comments && selectedTask.comments.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Comments
+                    </label>
+                    <div className="flex items-center space-x-2 p-3 rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-700/50">
+                      <ApperIcon name="MessageCircle" className="w-4 h-4" />
+                      <span className="text-sm">
+                        {selectedTask.comments.length} comment{selectedTask.comments.length !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex items-center justify-end p-6 border-t border-slate-200 dark:border-slate-700">
+                <motion.button
+                  onClick={() => setShowTaskDetailsModal(false)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors"
+                >
+                  Close
                 </motion.button>
               </div>
             </motion.div>
