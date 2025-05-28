@@ -308,10 +308,11 @@ const TaskForm = ({
               Due Date
             </label>
             <CalendarPicker
-              value={formData.dueDate ? new Date(formData.dueDate) : null}
-              onChange={handleDateChange}
+              selectedDate={formData.dueDate ? new Date(formData.dueDate) : null}
+              onDateChange={handleDateChange}
               placeholder="Select due date"
             />
+
           </div>
 
           {/* Subtasks Section */}

@@ -145,8 +145,9 @@
   }
 
   .react-datepicker__day--selected {
-    @apply bg-primary text-white hover:bg-primary-dark;
+    @apply bg-primary text-white hover:bg-primary-dark font-semibold;
   }
+
 
   .react-datepicker__day--today {
     @apply bg-accent/20 text-accent-dark font-bold;
@@ -177,8 +178,9 @@
   }
 
   .react-datepicker__day {
-    @apply w-8 h-8 flex items-center justify-center text-sm;
+    @apply w-8 h-8 flex items-center justify-center text-sm font-medium;
   }
+
 
   /* Dark mode calendar styles */
   .dark .custom-calendar {
