@@ -31,7 +31,15 @@ const TaskForm = ({
     }
     const savedMembers = localStorage.getItem('taskflow-team-members')
     if (savedMembers) {
-      setTeamMembers(JSON.parse(savedMembers))
+      try {
+        const members = JSON.parse(savedMembers)
+        setTeamMembers(members)
+      } catch (error) {
+        console.error('Error parsing team members:', error)
+        setTeamMembers([])
+      }
+    } else {
+      setTeamMembers([])
     }
 
   }, [])
