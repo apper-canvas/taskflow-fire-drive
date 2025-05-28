@@ -519,7 +519,8 @@
   }
 
   .notification-item {
-    @apply p-3 transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer group;
+    @apply p-3 transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer;
+
   }
 
   .notification-item.unread {
