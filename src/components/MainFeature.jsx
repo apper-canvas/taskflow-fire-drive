@@ -49,6 +49,7 @@ const MainFeature = () => {
     if (savedProjects) {
       setProjects(JSON.parse(savedProjects))
     }
+  }, [])
 
   // Load team members from localStorage on mount
   useEffect(() => {
@@ -63,7 +64,6 @@ const MainFeature = () => {
     localStorage.setItem('taskflow-team-members', JSON.stringify(teamMembers))
   }, [teamMembers])
 
-  }, [])
 
   // Save projects to localStorage whenever projects change
   useEffect(() => {
