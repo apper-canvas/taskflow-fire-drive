@@ -242,6 +242,20 @@ const Dashboard = () => {
   }
 
   const thisWeeksTasks = getThisWeeksTasks()
+  // Get this month's tasks based on due date
+  const getThisMonthsTasks = () => {
+    const monthStart = startOfMonth(new Date())
+    const monthEnd = endOfMonth(new Date())
+    return tasks.filter(task => {
+      if (!task.dueDate) return false
+      const dueDate = parseISO(task.dueDate)
+      return isValid(dueDate) && isWithinInterval(dueDate, { start: monthStart, end: monthEnd })
+    })
+  }
+
+  const thisMonthsTasks = getThisMonthsTasks()
+
+
 
 
   const recentTasks = getRecentActivity()
@@ -638,16 +652,147 @@ const Dashboard = () => {
               </div>
             </div>
           </motion.div>
+          {/* This Month's Tasks Section */}
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="mb-8"
+          >
+            <div className="dashboard-activity-card">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+                      <Calendar className="w-6 h-6 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                        This Month's Tasks
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        {format(startOfMonth(new Date()), 'MMMM d')} - {format(endOfMonth(new Date()), 'MMMM d, yyyy')}
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    to="/"
+                    className="text-primary dark:text-primary-light hover:underline text-sm font-medium"
+                  >
+                    View All Tasks
+                  </Link>
+                </div>
+                
+                {thisMonthsTasks.length > 0 ? (
+                  <div className="space-y-3">
+                    {thisMonthsTasks.slice(0, 8).map((task) => (
+                      <motion.div 
+                        key={task.id} 
+                        className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200"
+                        whileHover={{ scale: 1.01 }}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-3 h-3 rounded-full bg-${
+                            task.priority === 'high' ? 'red' : 
+                            task.priority === 'medium' ? 'amber' : 'green'
+                          }-500`}></div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                              {task.title}
+                            </p>
+                            <div className="flex items-center space-x-2 mt-1">
+                              <span className={`status-badge status-${task.status} text-xs`}>
+                                {task.status === 'todo' ? 'To Do' : 
+                                 task.status === 'progress' ? 'In Progress' : 
+                                 task.status === 'review' ? 'Review' : 'Done'}
+                              </span>
+                              <span className="text-xs text-slate-500 dark:text-slate-400">
+                                Due: {format(parseISO(task.dueDate), 'MMM d')}
+                                {isToday(parseISO(task.dueDate)) && (
+                                  <span className="ml-1 px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+                                    Today
+                                  </span>
+                                )}
+                                {isWithinInterval(parseISO(task.dueDate), { start: startOfWeek(new Date()), end: endOfWeek(new Date()) }) && !isToday(parseISO(task.dueDate)) && (
+                                  <span className="ml-1 px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">
+                                    This Week
+                                  </span>
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {/* Quick status update buttons */}
+                          <motion.button
+                            onClick={() => handleTodayTaskStatusUpdate(task.id, task.status === 'todo' ? 'progress' : task.status === 'progress' ? 'done' : 'todo')}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="p-2 text-slate-400 hover:text-primary dark:hover:text-primary-light transition-colors duration-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600"
+                            title={task.status === 'todo' ? 'Start Task' : task.status === 'progress' ? 'Complete Task' : 'Reset Task'}
+                          >
+                            <ApperIcon 
+                              name={task.status === 'todo' ? 'Play' : task.status === 'progress' ? 'CheckCircle' : 'RotateCcw'} 
+                              className="w-4 h-4" 
+                            />
+                          </motion.button>
+                          <motion.button
+                            onClick={() => {
+                              toast.info(`Opening task: ${task.title}`)
+                              // This would typically navigate to task details
+                            }}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="p-2 text-slate-400 hover:text-primary dark:hover:text-primary-light transition-colors duration-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600"
+                            title="View Task Details"
+                          >
+                            <ApperIcon name="Eye" className="w-4 h-4" />
+                          </motion.button>
+                        </div>
+                      </motion.div>
+                    ))}
+                    {thisMonthsTasks.length > 8 && (
+                      <div className="text-center pt-4">
+                        <Link
+                          to="/"
+                          className="text-primary dark:text-primary-light hover:underline text-sm font-medium"
+                        >
+                          View {thisMonthsTasks.length - 8} more tasks for this month
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+                    <div className="w-16 h-16 bg-slate-200 dark:bg-slate-700 rounded-xl flex items-center justify-center mx-auto mb-4">
+                      <Calendar className="w-8 h-8 opacity-50" />
+                    </div>
+                    <h4 className="text-lg font-medium mb-2">No tasks due this month</h4>
+                    <p className="text-sm">Start planning your month ahead! 📅</p>
+                    <Link
+                      to="/"
+                      className="inline-flex items-center space-x-2 mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors duration-200 text-sm font-medium"
+                    >
+                      <ApperIcon name="Plus" className="w-4 h-4" />
+                      <span>Add New Task</span>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+
+
 
 
 
           {/* Charts Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+<motion.div
+
             {/* Status Distribution Chart */}
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+
               className="dashboard-chart-card"
             >
               <div className="p-6">
@@ -672,11 +817,11 @@ const Dashboard = () => {
               </div>
             </motion.div>
 
+<motion.div
+
             {/* Priority Distribution Chart */}
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+
               className="dashboard-chart-card"
             >
               <div className="p-6">
@@ -702,11 +847,11 @@ const Dashboard = () => {
             </motion.div>
           </div>
 
+<motion.div
+
           {/* Status Category Cards */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
           >
             {/* To Do */}
@@ -786,11 +931,11 @@ const Dashboard = () => {
             </div>
           </motion.div>
 
+<motion.div
+
           {/* Recent Activity */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+
             className="dashboard-activity-card"
           >
             <div className="p-6">
