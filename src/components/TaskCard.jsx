@@ -15,6 +15,22 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, statusOptions, prior
     return format(date, 'MMM d, yyyy')
   }
 
+  const getDueDateStatus = (dateString) => {
+    if (!dateString) return 'none'
+    
+    const date = parseISO(dateString)
+    const today = new Date()
+    
+    if (date < today && !isToday(date)) return 'overdue'
+    if (isToday(date)) return 'today'
+    if (isTomorrow(date)) return 'tomorrow'
+    
+    return 'future'
+  }
+
+  const dueDateStatus = getDueDateStatus(task.dueDate)
+
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.9 }}
@@ -72,10 +88,19 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, statusOptions, prior
           <ApperIcon name={categoryOptions.find(c => c.value === task.category)?.icon || 'Tag'} className="w-4 h-4" />
           <span className="capitalize">{task.category}</span>
         </div>
-        <div className="flex items-center space-x-1">
+        <div className={`flex items-center space-x-1 ${
+          dueDateStatus === 'overdue' ? 'text-red-600 dark:text-red-400' :
+          dueDateStatus === 'today' ? 'text-amber-600 dark:text-amber-400' :
+          dueDateStatus === 'tomorrow' ? 'text-blue-600 dark:text-blue-400' :
+          'text-slate-500 dark:text-slate-400'
+        }`}>
           <ApperIcon name="Calendar" className="w-4 h-4" />
-          <span>{formatDueDate(task.dueDate)}</span>
+          <span className="font-medium">{formatDueDate(task.dueDate)}</span>
+          {dueDateStatus === 'overdue' && (
+            <ApperIcon name="AlertTriangle" className="w-3 h-3 ml-1" />
+          )}
         </div>
+
       </div>
 
       {/* Quick Status Update */}
