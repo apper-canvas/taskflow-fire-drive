@@ -6,6 +6,9 @@ import ApperIcon from './ApperIcon'
 
 const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
   const [notifications, setNotifications] = useState([])
+  const [selectedNotification, setSelectedNotification] = useState(null)
+  const [showDetailsModal, setShowDetailsModal] = useState(false)
+
   const [showPanel, setShowPanel] = useState(false)
   const [lastCheck, setLastCheck] = useState(Date.now())
 
@@ -189,8 +192,62 @@ const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
   }
 
   const clearAllNotifications = () => {
+  const clearAllNotifications = () => {
     setNotifications([])
+    toast.success('All notifications cleared')
   }
+
+  const handleNotificationClick = (notification) => {
+    setSelectedNotification(notification)
+    setShowDetailsModal(true)
+    if (!notification.isRead) {
+      markAsRead(notification.id)
+    }
+  }
+
+  const handleMarkAsUnread = (notificationId) => {
+    setNotifications(prev => 
+      prev.map(n => 
+        n.id === notificationId ? { ...n, isRead: false } : n
+      )
+    )
+    toast.success('Notification marked as unread')
+  }
+
+  const handleDeleteFromModal = (notificationId) => {
+    removeNotification(notificationId)
+    setShowDetailsModal(false)
+    setSelectedNotification(null)
+    toast.success('Notification deleted')
+  }
+
+  const handleViewTask = (taskId) => {
+    // This would typically navigate to the task details page
+    // For now, we'll show a toast message
+    toast.info(`Navigate to task: ${taskId}`)
+    setShowDetailsModal(false)
+    setSelectedNotification(null)
+  }
+
+  const getTaskStatusColor = (status) => {
+    switch (status) {
+      case 'todo': return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
+      case 'in-progress': return 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+      case 'review': return 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300'
+      case 'done': return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+      default: return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
+    }
+  }
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 'high': return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
+      case 'medium': return 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300'
+      case 'low': return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+      default: return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
+    }
+  }
+
 
   const getNotificationIcon = (type) => {
     switch (type) {
@@ -332,7 +389,8 @@ const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
                         } ${
                           !notification.isRead ? 'bg-primary/5 dark:bg-primary/10' : ''
                         }`}
-                        onClick={() => !notification.isRead && markAsRead(notification.id)}
+                        onClick={() => handleNotificationClick(notification)}
+
                       >
                         <div className="flex items-start space-x-3">
                           <div className={`notification-icon mt-0.5 ${getNotificationColor(notification.type, notification.priority)}`}>
@@ -381,6 +439,180 @@ const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
           </>
         )}
       </AnimatePresence>
+
+      {/* Notification Details Modal */}
+      <AnimatePresence>
+        {showDetailsModal && selectedNotification && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Modal Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setShowDetailsModal(false)}
+            />
+            
+            {/* Modal Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", duration: 0.3 }}
+              className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-md mx-4"
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
+                <div className="flex items-center space-x-3">
+                  <div className={`p-2 rounded-lg ${getNotificationColor(selectedNotification.type, selectedNotification.priority)} bg-opacity-20`}>
+                    <ApperIcon name={getNotificationIcon(selectedNotification.type)} className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                      {selectedNotification.title}
+                    </h3>
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(selectedNotification.priority)}`}>
+                      {selectedNotification.priority} priority
+                    </span>
+                  </div>
+                </div>
+                <motion.button
+                  onClick={() => setShowDetailsModal(false)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                >
+                  <ApperIcon name="X" className="w-5 h-5" />
+                </motion.button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6 space-y-4">
+                {/* Notification Message */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    Message
+                  </label>
+                  <p className="text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3">
+                    {selectedNotification.message}
+                  </p>
+                </div>
+
+                {/* Task Details */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      Task
+                    </label>
+                    <p className="text-sm text-slate-900 dark:text-white font-medium">
+                      {selectedNotification.taskTitle}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      Assignee
+                    </label>
+                    <p className="text-sm text-slate-900 dark:text-white">
+                      {selectedNotification.assignee}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Timestamp */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    Notification Time
+                  </label>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    {new Date(selectedNotification.timestamp).toLocaleString()}
+                  </p>
+                </div>
+
+                {/* Due Date (if applicable) */}
+                {(selectedNotification.type === 'overdue' || selectedNotification.type === 'due_today' || selectedNotification.type === 'due_tomorrow') && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      Due Date
+                    </label>
+                    <p className={`text-sm font-medium ${
+                      selectedNotification.type === 'overdue' ? 'text-red-600 dark:text-red-400' :
+                      selectedNotification.type === 'due_today' ? 'text-amber-600 dark:text-amber-400' :
+                      'text-blue-600 dark:text-blue-400'
+                    }`}>
+                      {selectedNotification.type === 'overdue' && 'Overdue: '}
+                      {selectedNotification.type === 'due_today' && 'Due Today: '}
+                      {selectedNotification.type === 'due_tomorrow' && 'Due Tomorrow: '}
+                      {format(new Date(selectedNotification.timestamp), 'MMM d, yyyy')}
+                    </p>
+                  </div>
+                )}
+
+                {/* Read Status */}
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Status
+                  </label>
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    selectedNotification.isRead 
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' 
+                      : 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+                  }`}>
+                    {selectedNotification.isRead ? 'Read' : 'Unread'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex items-center justify-between p-6 border-t border-slate-200 dark:border-slate-700">
+                <div className="flex space-x-2">
+                  <motion.button
+                    onClick={() => handleViewTask(selectedNotification.taskId)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-dark rounded-lg transition-colors"
+                  >
+                    <ApperIcon name="Eye" className="w-4 h-4 mr-1" />
+                    View Task
+                  </motion.button>
+                  
+                  {selectedNotification.isRead ? (
+                    <motion.button
+                      onClick={() => handleMarkAsUnread(selectedNotification.id)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors"
+                    >
+                      <ApperIcon name="Mail" className="w-4 h-4 mr-1" />
+                      Mark Unread
+                    </motion.button>
+                  ) : (
+                    <motion.button
+                      onClick={() => markAsRead(selectedNotification.id)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors"
+                    >
+                      <ApperIcon name="MailOpen" className="w-4 h-4 mr-1" />
+                      Mark Read
+                    </motion.button>
+                  )}
+                </div>
+                
+                <motion.button
+                  onClick={() => handleDeleteFromModal(selectedNotification.id)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                >
+                  <ApperIcon name="Trash2" className="w-4 h-4 mr-1" />
+                  Delete
+                </motion.button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   )
 }
