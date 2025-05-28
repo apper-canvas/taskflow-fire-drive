@@ -49,14 +49,14 @@ const Home = () => {
             {/* Navigation */}
             <nav className="flex items-center space-x-6">
               <Link
-                to="/"
+                to="/home"
                 className="flex items-center space-x-2 px-4 py-2 text-primary dark:text-primary-light bg-primary/10 dark:bg-primary/20 rounded-lg font-medium transition-all duration-200"
               >
                 <CheckSquare className="w-4 h-4" />
                 <span>Tasks</span>
               </Link>
               <Link
-                to="/dashboard"
+                to="/"
                 className="flex items-center space-x-2 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary-light hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg font-medium transition-all duration-200"
               >
                 <BarChart3 className="w-4 h-4" />
