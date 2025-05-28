@@ -23,26 +23,63 @@ const TaskForm = ({
   const [subtaskInput, setSubtaskInput] = useState('')
   const [showSubtaskForm, setShowSubtaskForm] = useState(false)
 
-  // Load projects from localStorage
+  // Load projects and team members from localStorage
   useEffect(() => {
+    console.log('TaskForm: Loading data from localStorage...')
+    
+    // Load projects
     const savedProjects = localStorage.getItem('taskflow-projects')
     if (savedProjects) {
       setProjects(JSON.parse(savedProjects))
     }
+    
+    // Load team members with enhanced debugging
     const savedMembers = localStorage.getItem('taskflow-team-members')
+    console.log('TaskForm: Raw saved members:', savedMembers)
+    
     if (savedMembers) {
       try {
         const members = JSON.parse(savedMembers)
+        console.log('TaskForm: Parsed members:', members)
+        console.log('TaskForm: Members count:', members.length)
         setTeamMembers(members)
       } catch (error) {
-        console.error('Error parsing team members:', error)
+        console.error('TaskForm: Error parsing team members:', error)
         setTeamMembers([])
       }
     } else {
-      setTeamMembers([])
+      console.log('TaskForm: No saved members found, creating sample members')
+      // Create sample team members if none exist
+      const sampleMembers = [
+        {
+          id: 'sample-1',
+          name: 'John Doe',
+          email: 'john@example.com',
+          role: 'admin',
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: 'sample-2', 
+          name: 'Jane Smith',
+          email: 'jane@example.com',
+          role: 'manager',
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: 'sample-3',
+          name: 'Bob Johnson',
+          email: 'bob@example.com', 
+          role: 'member',
+          createdAt: new Date().toISOString()
+        }
+      ]
+      setTeamMembers(sampleMembers)
+      localStorage.setItem('taskflow-team-members', JSON.stringify(sampleMembers))
+      console.log('TaskForm: Created sample members:', sampleMembers)
     }
-
   }, [])
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -170,6 +207,11 @@ const TaskForm = ({
               ))}
             </select>
           </div>
+
+          {/* Debug Info */}
+          {console.log('TaskForm: Current teamMembers state:', teamMembers)}
+          {console.log('TaskForm: teamMembers.length:', teamMembers.length)}
+          
 
           {/* Assignee Selection */}
           <div>
