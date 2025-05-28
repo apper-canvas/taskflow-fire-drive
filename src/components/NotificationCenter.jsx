@@ -192,7 +192,6 @@ const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
   }
 
   const clearAllNotifications = () => {
-  const clearAllNotifications = () => {
     setNotifications([])
     toast.success('All notifications cleared')
   }
@@ -381,7 +380,7 @@ const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className={`notification-item p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200 border-l-4 ${
+                        className={`notification-item p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200 cursor-pointer border-l-4 ${
                           notification.isRead ? 'border-l-transparent' : 
                           notification.priority === 'high' ? 'border-l-red-500' :
                           notification.priority === 'medium' ? 'border-l-amber-500' :
@@ -389,6 +388,7 @@ const NotificationCenter = ({ tasks = [], teamMembers = [] }) => {
                         } ${
                           !notification.isRead ? 'bg-primary/5 dark:bg-primary/10' : ''
                         }`}
+
                         onClick={() => handleNotificationClick(notification)}
 
                       >
