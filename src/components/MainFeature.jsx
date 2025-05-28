@@ -9,12 +9,14 @@ import KanbanBoard from './KanbanBoard'
 
 const MainFeature = () => {
   const [tasks, setTasks] = useState([])
+  const [projects, setProjects] = useState([])
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
   const [filter, setFilter] = useState('all')
   const [sortBy, setSortBy] = useState('dueDate')
   const [searchTerm, setSearchTerm] = useState('')
   const [viewMode, setViewMode] = useState('grid')
+  const [selectedProject, setSelectedProject] = useState('all')
 
   // Form state
   const [formData, setFormData] = useState({
@@ -24,8 +26,11 @@ const MainFeature = () => {
     status: 'todo',
     dueDate: '',
     category: 'work',
+    projectId: '',
     subtasks: []
   })
+
+
 
 
   // Load tasks from localStorage on mount
@@ -34,6 +39,20 @@ const MainFeature = () => {
     if (savedTasks) {
       setTasks(JSON.parse(savedTasks))
     }
+
+  // Load projects from localStorage on mount
+  useEffect(() => {
+    const savedProjects = localStorage.getItem('taskflow-projects')
+    if (savedProjects) {
+      setProjects(JSON.parse(savedProjects))
+    }
+  }, [])
+
+  // Save projects to localStorage whenever projects change
+  useEffect(() => {
+    localStorage.setItem('taskflow-projects', JSON.stringify(projects))
+  }, [projects])
+
   }, [])
 
   // Save tasks to localStorage whenever tasks change
@@ -49,10 +68,13 @@ const MainFeature = () => {
       status: 'todo',
       dueDate: '',
       category: 'work',
+      projectId: '',
       subtasks: []
     })
     setEditingTask(null)
   }
+
+
 
 
   const handleSubmit = (e) => {
@@ -95,11 +117,14 @@ const MainFeature = () => {
       status: task.status,
       dueDate: task.dueDate,
       category: task.category,
+      projectId: task.projectId || '',
       subtasks: task.subtasks || []
     })
     setEditingTask(task)
     setShowCreateForm(true)
   }
+
+
 
 
   const handleDelete = (taskId) => {
@@ -143,9 +168,10 @@ const MainFeature = () => {
   const filteredAndSortedTasks = tasks
     .filter(task => {
       const matchesFilter = filter === 'all' || task.status === filter
+      const matchesProject = selectedProject === 'all' || task.projectId === selectedProject
       const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            task.description.toLowerCase().includes(searchTerm.toLowerCase())
-      return matchesFilter && matchesSearch
+      return matchesFilter && matchesProject && matchesSearch
     })
     .sort((a, b) => {
       if (sortBy === 'dueDate') {
@@ -159,6 +185,8 @@ const MainFeature = () => {
       }
       return new Date(b.createdAt) - new Date(a.createdAt)
     })
+
+
 
   const statusOptions = [
     { value: 'todo', label: 'To Do', icon: 'Circle', color: 'slate' },
@@ -187,6 +215,10 @@ const MainFeature = () => {
       <TaskStats tasks={tasks} />
 
       {/* Controls */}
+        selectedProject={selectedProject}
+        setSelectedProject={setSelectedProject}
+        projects={projects}
+
       <TaskControls
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -262,6 +294,8 @@ const MainFeature = () => {
           }}
           statusOptions={statusOptions}
           priorityOptions={priorityOptions}
+          projects={projects}
+
           categoryOptions={categoryOptions}
         />
       </AnimatePresence>

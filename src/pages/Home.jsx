@@ -54,6 +54,17 @@ const Home = () => {
             <h1 className="text-2xl font-bold text-gradient">TaskFlow</h1>
           </motion.div>
 
+            <motion.div className="flex items-center space-x-2">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-primary dark:hover:text-primary-light transition-colors duration-200"
+                onClick={() => window.location.href = '/projects'}
+              >
+                Projects
+              </motion.button>
+            </motion.div>
+
           <div className="flex items-center space-x-4">
             <motion.button
               onClick={toggleDarkMode}

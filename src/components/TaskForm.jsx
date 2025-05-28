@@ -14,8 +14,10 @@ const TaskForm = ({
   onClose, 
   statusOptions, 
   priorityOptions, 
-  categoryOptions 
+  categoryOptions,
+  projects = []
 }) => {
+
   if (!showForm) return null
 
   return (
@@ -139,6 +141,23 @@ const TaskForm = ({
               </select>
             </div>
           </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Project
+            </label>
+            <select
+              value={formData.projectId || ''}
+              onChange={(e) => setFormData({...formData, projectId: e.target.value})}
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+            >
+              <option value="">No Project</option>
+              {projects.map(project => (
+                <option key={project.id} value={project.id}>{project.name}</option>
+              ))}
+            </select>
+          </div>
+
+
 
           {/* Subtasks Section */}
           <div>
