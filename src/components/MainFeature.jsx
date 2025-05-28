@@ -29,16 +29,14 @@ const MainFeature = () => {
     projectId: '',
     subtasks: []
   })
-
-
-
-
+  // Load tasks from localStorage on mount
   // Load tasks from localStorage on mount
   useEffect(() => {
     const savedTasks = localStorage.getItem('taskflow-tasks')
     if (savedTasks) {
       setTasks(JSON.parse(savedTasks))
     }
+  }, [])
 
   // Load projects from localStorage on mount
   useEffect(() => {
@@ -53,7 +51,6 @@ const MainFeature = () => {
     localStorage.setItem('taskflow-projects', JSON.stringify(projects))
   }, [projects])
 
-  }, [])
 
   // Save tasks to localStorage whenever tasks change
   useEffect(() => {
@@ -73,10 +70,6 @@ const MainFeature = () => {
     })
     setEditingTask(null)
   }
-
-
-
-
   const handleSubmit = (e) => {
     e.preventDefault()
     
@@ -123,10 +116,6 @@ const MainFeature = () => {
     setEditingTask(task)
     setShowCreateForm(true)
   }
-
-
-
-
   const handleDelete = (taskId) => {
     setTasks(tasks.filter(task => task.id !== taskId))
     toast.success('Task deleted successfully!')
@@ -186,8 +175,6 @@ const MainFeature = () => {
       return new Date(b.createdAt) - new Date(a.createdAt)
     })
 
-
-
   const statusOptions = [
     { value: 'todo', label: 'To Do', icon: 'Circle', color: 'slate' },
     { value: 'progress', label: 'In Progress', icon: 'Clock', color: 'blue' },
@@ -215,10 +202,6 @@ const MainFeature = () => {
       <TaskStats tasks={tasks} />
 
       {/* Controls */}
-        selectedProject={selectedProject}
-        setSelectedProject={setSelectedProject}
-        projects={projects}
-
       <TaskControls
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -230,7 +213,11 @@ const MainFeature = () => {
         viewMode={viewMode}
         setViewMode={setViewMode}
         statusOptions={statusOptions}
+        selectedProject={selectedProject}
+        setSelectedProject={setSelectedProject}
+        projects={projects}
       />
+
 
       {/* Task Views */}
       {viewMode === 'kanban' ? (
@@ -259,10 +246,9 @@ const MainFeature = () => {
                 priorityOptions={priorityOptions}
                 categoryOptions={categoryOptions}
               />
-
-            
             ))}
           </AnimatePresence>
+
 
           {filteredAndSortedTasks.length === 0 && (
             <div className="col-span-full text-center py-12">
@@ -277,6 +263,8 @@ const MainFeature = () => {
               </p>
             </div>
           )}
+        </div>
+
         </div>
       )}
 
@@ -294,8 +282,6 @@ const MainFeature = () => {
           }}
           statusOptions={statusOptions}
           priorityOptions={priorityOptions}
-          projects={projects}
-
           categoryOptions={categoryOptions}
         />
       </AnimatePresence>
