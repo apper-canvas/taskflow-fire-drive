@@ -33,7 +33,13 @@ const TaskForm = ({
       setProjects(JSON.parse(savedProjects))
     }
     
-    // Load team members with enhanced debugging
+    // Load team members
+    loadTeamMembers()
+  }, [])
+
+  // Function to load team members from localStorage
+  const loadTeamMembers = () => {
+    console.log('TaskForm: Loading team members...')
     const savedMembers = localStorage.getItem('taskflow-team-members')
     console.log('TaskForm: Raw saved members:', savedMembers)
     
@@ -48,36 +54,45 @@ const TaskForm = ({
         setTeamMembers([])
       }
     } else {
-      console.log('TaskForm: No saved members found, creating sample members')
-      // Create sample team members if none exist
-      const sampleMembers = [
-        {
-          id: 'sample-1',
-          name: 'John Doe',
-          email: 'john@example.com',
-          role: 'admin',
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: 'sample-2', 
-          name: 'Jane Smith',
-          email: 'jane@example.com',
-          role: 'manager',
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: 'sample-3',
-          name: 'Bob Johnson',
-          email: 'bob@example.com', 
-          role: 'member',
-          createdAt: new Date().toISOString()
-        }
-      ]
-      setTeamMembers(sampleMembers)
-      localStorage.setItem('taskflow-team-members', JSON.stringify(sampleMembers))
-      console.log('TaskForm: Created sample members:', sampleMembers)
+      console.log('TaskForm: No saved members found')
+      setTeamMembers([])
+    }
+  }
+
+  // Listen for storage changes to sync team members across components
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'taskflow-team-members') {
+        console.log('TaskForm: Storage change detected for team members')
+        loadTeamMembers()
+      }
+    }
+
+    // Listen for storage events
+    window.addEventListener('storage', handleStorageChange)
+
+    // Listen for custom team member update events
+    const handleTeamMemberUpdate = () => {
+      console.log('TaskForm: Team member update event received')
+      loadTeamMembers()
+    }
+
+    window.addEventListener('teamMembersUpdated', handleTeamMemberUpdate)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('teamMembersUpdated', handleTeamMemberUpdate)
     }
   }, [])
+
+  // Also listen for when the form is shown to refresh team members
+  useEffect(() => {
+    if (showForm) {
+      console.log('TaskForm: Form opened, refreshing team members')
+      loadTeamMembers()
+    }
+  }, [showForm])
+
 
 
 

@@ -22,10 +22,20 @@ const TeamMemberManager = ({ showManager, onClose }) => {
     }
   }, [])
 
-  // Save team members to localStorage
+  // Save team members to localStorage and notify other components
   useEffect(() => {
     localStorage.setItem('taskflow-team-members', JSON.stringify(teamMembers))
+    
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new CustomEvent('teamMembersUpdated'))
+    
+    // Also trigger storage event for cross-tab synchronization
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'taskflow-team-members',
+      newValue: JSON.stringify(teamMembers)
+    }))
   }, [teamMembers])
+
 
   const resetForm = () => {
     setFormData({
