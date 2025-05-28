@@ -201,6 +201,65 @@
     @apply text-slate-700;
   }
 
+
+  /* Subtask Styles */
+  .subtask-item {
+    @apply flex items-center space-x-2 p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-600 transition-all duration-200;
+  }
+
+  .subtask-item:hover {
+    @apply bg-slate-100 dark:bg-slate-700;
+  }
+
+  .subtask-checkbox {
+    @apply w-4 h-4 rounded border border-slate-300 dark:border-slate-600 text-primary focus:ring-primary focus:ring-offset-0;
+  }
+
+  .subtask-text {
+    @apply flex-1 text-sm text-slate-700 dark:text-slate-300;
+  }
+
+  .subtask-text.completed {
+    @apply line-through text-slate-500 dark:text-slate-400;
+  }
+
+  .subtask-progress-bar {
+    @apply w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden;
+  }
+
+  .subtask-progress-fill {
+    @apply h-full bg-gradient-to-r from-primary to-primary-light transition-all duration-300;
+  }
+
+  .subtask-progress-text {
+    @apply text-xs text-slate-600 dark:text-slate-400 font-medium;
+  }
+
+  .subtask-section {
+    @apply mt-3 pt-3 border-t border-slate-200 dark:border-slate-700;
+  }
+
+  .subtask-toggle {
+    @apply flex items-center justify-between cursor-pointer text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-primary dark:hover:text-primary-light transition-colors duration-200;
+  }
+
+  .subtask-list {
+    @apply space-y-2 mt-2;
+  }
+
+  .subtask-form {
+    @apply space-y-3 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-600;
+  }
+
+  .subtask-input {
+    @apply w-full px-3 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300;
+  }
+
+  .subtask-add-button {
+    @apply w-full px-3 py-2 text-sm bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary-light border border-primary/30 dark:border-primary/40 rounded-lg hover:bg-primary/20 dark:hover:bg-primary/30 transition-all duration-200;
+  }
+
+
 }
 
 @layer utilities {

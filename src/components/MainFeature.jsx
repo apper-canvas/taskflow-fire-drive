@@ -23,8 +23,10 @@ const MainFeature = () => {
     priority: 'medium',
     status: 'todo',
     dueDate: '',
-    category: 'work'
+    category: 'work',
+    subtasks: []
   })
+
 
   // Load tasks from localStorage on mount
   useEffect(() => {
@@ -46,10 +48,12 @@ const MainFeature = () => {
       priority: 'medium',
       status: 'todo',
       dueDate: '',
-      category: 'work'
+      category: 'work',
+      subtasks: []
     })
     setEditingTask(null)
   }
+
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -90,11 +94,13 @@ const MainFeature = () => {
       priority: task.priority,
       status: task.status,
       dueDate: task.dueDate,
-      category: task.category
+      category: task.category,
+      subtasks: task.subtasks || []
     })
     setEditingTask(task)
     setShowCreateForm(true)
   }
+
 
   const handleDelete = (taskId) => {
     setTasks(tasks.filter(task => task.id !== taskId))
@@ -117,6 +123,22 @@ const MainFeature = () => {
         : task
     ))
   }
+
+  const handleSubtaskToggle = (taskId, subtaskId) => {
+    setTasks(tasks.map(task => {
+      if (task.id === taskId) {
+        const updatedSubtasks = task.subtasks.map(subtask => 
+          subtask.id === subtaskId 
+            ? { ...subtask, completed: !subtask.completed }
+            : subtask
+        )
+        return { ...task, subtasks: updatedSubtasks, updatedAt: new Date().toISOString() }
+      }
+      return task
+    }))
+    toast.success('Subtask updated!')
+  }
+
 
   const filteredAndSortedTasks = tasks
     .filter(task => {
@@ -200,10 +222,16 @@ const MainFeature = () => {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onStatusChange={handleStatusChange}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+                onSubtaskToggle={handleSubtaskToggle}
                 statusOptions={statusOptions}
                 priorityOptions={priorityOptions}
                 categoryOptions={categoryOptions}
-              />
+
+              </TaskCard>
+            
             ))}
           </AnimatePresence>
 

@@ -1,8 +1,12 @@
+import { useState } from 'react'
+
 import { motion } from 'framer-motion'
 import { format, isToday, isTomorrow, isYesterday, parseISO } from 'date-fns'
 import ApperIcon from './ApperIcon'
 
-const TaskCard = ({ task, onEdit, onDelete, onStatusChange, statusOptions, priorityOptions, categoryOptions, isDragging = false }) => {
+const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onSubtaskToggle, statusOptions, priorityOptions, categoryOptions, isDragging = false }) => {
+  const [showSubtasks, setShowSubtasks] = useState(false)
+
   const formatDueDate = (dateString) => {
     if (!dateString) return 'No due date'
     
@@ -29,6 +33,19 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, statusOptions, prior
   }
 
   const dueDateStatus = getDueDateStatus(task.dueDate)
+
+  const getSubtaskProgress = () => {
+    if (!task.subtasks || task.subtasks.length === 0) return { completed: 0, total: 0, percentage: 0 }
+    
+    const completed = task.subtasks.filter(subtask => subtask.completed).length
+    const total = task.subtasks.length
+    const percentage = total > 0 ? Math.round((completed / total) * 100) : 0
+    
+    return { completed, total, percentage }
+  }
+
+  const subtaskProgress = getSubtaskProgress()
+
 
 
   return (
@@ -102,6 +119,63 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, statusOptions, prior
         </div>
 
       </div>
+
+      {/* Subtasks Section */}
+      {task.subtasks && task.subtasks.length > 0 && (
+        <div className="subtask-section">
+          <div 
+            className="subtask-toggle"
+            onClick={(e) => {
+              e.stopPropagation()
+              setShowSubtasks(!showSubtasks)
+            }}
+          >
+            <div className="flex items-center space-x-2">
+              <ApperIcon name="CheckSquare" className="w-4 h-4" />
+              <span>Subtasks ({subtaskProgress.completed}/{subtaskProgress.total})</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="subtask-progress-text">{subtaskProgress.percentage}%</span>
+              <ApperIcon 
+                name={showSubtasks ? "ChevronUp" : "ChevronDown"} 
+                className="w-4 h-4" 
+              />
+            </div>
+          </div>
+          
+          <div className="mt-2">
+            <div className="subtask-progress-bar">
+              <div 
+                className="subtask-progress-fill" 
+                style={{ width: `${subtaskProgress.percentage}%` }}
+              ></div>
+            </div>
+          </div>
+
+          {showSubtasks && (
+            <div className="subtask-list">
+              {task.subtasks.map((subtask) => (
+                <div key={subtask.id} className="subtask-item">
+                  <input
+                    type="checkbox"
+                    checked={subtask.completed}
+                    onChange={(e) => {
+                      e.stopPropagation()
+                      onSubtaskToggle && onSubtaskToggle(task.id, subtask.id)
+                    }}
+                    className="subtask-checkbox"
+                  />
+                  <span className={`subtask-text ${subtask.completed ? 'completed' : ''}`}>
+                    {subtask.title}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+
 
       {/* Quick Status Update */}
       <div className="flex items-center space-x-1 mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">

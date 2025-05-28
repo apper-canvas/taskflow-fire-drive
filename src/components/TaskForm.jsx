@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion'
+import { useState } from 'react'
+
 import CalendarPicker from './CalendarPicker'
 
 import ApperIcon from './ApperIcon'
@@ -137,6 +139,60 @@ const TaskForm = ({
               </select>
             </div>
           </div>
+
+          {/* Subtasks Section */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Subtasks
+            </label>
+            <div className="subtask-form">
+              <div className="space-y-2">
+                {formData.subtasks && formData.subtasks.map((subtask, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      value={subtask.title}
+                      onChange={(e) => {
+                        const newSubtasks = [...formData.subtasks]
+                        newSubtasks[index] = { ...subtask, title: e.target.value }
+                        setFormData({...formData, subtasks: newSubtasks})
+                      }}
+                      className="subtask-input"
+                      placeholder="Subtask description..."
+                    />
+                    <motion.button
+                      type="button"
+                      onClick={() => {
+                        const newSubtasks = formData.subtasks.filter((_, i) => i !== index)
+                        setFormData({...formData, subtasks: newSubtasks})
+                      }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="p-1 text-red-500 hover:text-red-600 transition-colors duration-200"
+                    >
+                      <ApperIcon name="X" className="w-4 h-4" />
+                    </motion.button>
+                  </div>
+                ))}
+              </div>
+              <motion.button
+                type="button"
+                onClick={() => {
+                  const newSubtasks = [...(formData.subtasks || []), { id: Date.now().toString(), title: '', completed: false }]
+                  setFormData({...formData, subtasks: newSubtasks})
+                }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="subtask-add-button"
+              >
+                <div className="flex items-center justify-center space-x-2">
+                  <ApperIcon name="Plus" className="w-4 h-4" />
+                  <span>Add Subtask</span>
+                </div>
+              </motion.button>
+            </div>
+          </div>
+
 
           <div className="flex space-x-3 pt-4">
             <motion.button
