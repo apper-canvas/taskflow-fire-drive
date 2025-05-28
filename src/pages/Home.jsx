@@ -1,12 +1,10 @@
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
+
 import { motion } from 'framer-motion'
 import ApperIcon from '../components/ApperIcon'
 
-import { FolderOpen, CheckSquare, BarChart3 } from 'lucide-react'
-
-import { useState } from 'react'
-
-
+import { FolderOpen, CheckSquare, Calendar, BarChart3 } from 'lucide-react'
 import MainFeature from '../components/MainFeature'
 import TeamMemberManager from '../components/TeamMemberManager'
 import TaskComments from '../components/TaskComments'
@@ -34,15 +32,15 @@ const Home = () => {
               <h1 className="text-xl font-bold text-slate-900 dark:text-white">
                 TaskFlow
               </h1>
-            <motion.button
-              onClick={() => setShowTeamManager(true)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 flex items-center space-x-2"
-            >
-              <ApperIcon name="Users" className="w-4 h-4" />
-              <span>Team</span>
-            </motion.button>
+              <motion.button
+                onClick={() => setShowTeamManager(true)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 flex items-center space-x-2"
+              >
+                <ApperIcon name="Users" className="w-4 h-4" />
+                <span>Team</span>
+              </motion.button>
 
             </div>
 
@@ -78,57 +76,57 @@ const Home = () => {
       {/* Main Content */}
       <main className="px-4 sm:px-6 lg:px-8 py-8">
 
-      {/* Team Member Manager Modal */}
-      <TeamMemberManager 
-        showManager={showTeamManager}
-        onClose={() => setShowTeamManager(false)}
-      />
+        {/* Team Member Manager Modal */}
+        <TeamMemberManager
+          showManager={showTeamManager}
+          onClose={() => setShowTeamManager(false)}
+        />
 
-      {/* Task Comments Modal */}
-      {showTaskComments && selectedTaskForComments && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={() => setShowTaskComments(false)}
-        >
+        {/* Task Comments Modal */}
+        {showTaskComments && selectedTaskForComments && (
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowTaskComments(false)}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                {selectedTaskForComments.title}
-              </h2>
-              <motion.button
-                onClick={() => setShowTaskComments(false)}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors duration-200"
-              >
-                <ApperIcon name="X" className="w-6 h-6" />
-              </motion.button>
-            </div>
-            
-            <TaskComments
-              taskId={selectedTaskForComments.id}
-              comments={selectedTaskForComments.comments || []}
-              onUpdateComments={(updatedComments) => {
-                // This would typically update the task in the main state
-                // For now, we'll just update the selected task
-                setSelectedTaskForComments({
-                  ...selectedTaskForComments,
-                  comments: updatedComments
-                })
-              }}
-            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                  {selectedTaskForComments.title}
+                </h2>
+                <motion.button
+                  onClick={() => setShowTaskComments(false)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors duration-200"
+                >
+                  <ApperIcon name="X" className="w-6 h-6" />
+                </motion.button>
+              </div>
+
+              <TaskComments
+                taskId={selectedTaskForComments.id}
+                comments={selectedTaskForComments.comments || []}
+                onUpdateComments={(updatedComments) => {
+                  // This would typically update the task in the main state
+                  // For now, we'll just update the selected task
+                  setSelectedTaskForComments({
+                    ...selectedTaskForComments,
+                    comments: updatedComments
+                  })
+                }}
+              />
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
+        )}
 
         <MainFeature />
       </main>

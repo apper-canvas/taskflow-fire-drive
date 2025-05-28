@@ -2,6 +2,8 @@ import { Routes, Route } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Home from './pages/Home'
+import MainFeature from './components/MainFeature'
+
 import Dashboard from './pages/Dashboard'
 
 import Projects from './pages/Projects'
@@ -13,7 +15,9 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <Routes>
         <Route path="/" element={<Dashboard />} />
-        <Route path="/tasks" element={<Home />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/tasks" element={<MainFeature />} />
+
 
 
         <Route path="/projects" element={<Projects />} />
