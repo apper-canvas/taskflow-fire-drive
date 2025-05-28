@@ -1,124 +1,135 @@
+import { Link } from 'react-router-dom'
+import { useState } from 'react'
+
 import { motion } from 'framer-motion'
-import Header from '../components/Header'
-import { CheckSquare, Users, BarChart3, Clock } from 'lucide-react'
+import ApperIcon from '../components/ApperIcon'
+
+import { FolderOpen, CheckSquare, Calendar, BarChart3 } from 'lucide-react'
+import MainFeature from '../components/MainFeature'
+import TeamMemberManager from '../components/TeamMemberManager'
+import TaskComments from '../components/TaskComments'
+
 
 const Home = () => {
+  const [showTeamManager, setShowTeamManager] = useState(false)
+  const [showTaskComments, setShowTaskComments] = useState(false)
+  const [selectedTaskForComments, setSelectedTaskForComments] = useState(null)
+
+
   return (
+
+
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      <Header />
-      
+      {/* Navigation Header */}
+      <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-white/20 dark:border-slate-700/50 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo/Brand */}
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-primary to-primary-light rounded-lg flex items-center justify-center">
+                <CheckSquare className="w-5 h-5 text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+                TaskFlow
+              </h1>
+              <motion.button
+                onClick={() => setShowTeamManager(true)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 flex items-center space-x-2"
+              >
+                <ApperIcon name="Users" className="w-4 h-4" />
+                <span>Team</span>
+              </motion.button>
+
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex items-center space-x-6">
+              <Link
+                to="/"
+                className="flex items-center space-x-2 px-4 py-2 text-primary dark:text-primary-light bg-primary/10 dark:bg-primary/20 rounded-lg font-medium transition-all duration-200"
+              >
+                <CheckSquare className="w-4 h-4" />
+                <span>Tasks</span>
+              </Link>
+              <Link
+                to="/dashboard"
+                className="flex items-center space-x-2 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary-light hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg font-medium transition-all duration-200"
+              >
+                <BarChart3 className="w-4 h-4" />
+                <span>Dashboard</span>
+              </Link>
+
+              <Link
+                to="/projects"
+                className="flex items-center space-x-2 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary-light hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg font-medium transition-all duration-200"
+              >
+                <FolderOpen className="w-4 h-4" />
+                <span>Projects</span>
+              </Link>
+            </nav>
+          </div>
+        </div>
+      </header>
+
       {/* Main Content */}
       <main className="px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Hero Section */}
-          <div className="text-center mb-12">
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-white mb-6"
-            >
-              Welcome to{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                TaskFlow
-              </span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto"
-            >
-              Streamline your workflow with our powerful task management platform
-            </motion.p>
-          </div>
 
-          {/* Feature Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-slate-700/50"
-            >
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mb-4">
-                <CheckSquare className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-                Task Management
-              </h3>
-              <p className="text-slate-600 dark:text-slate-400">
-                Create, organize, and track tasks with our intuitive interface
-              </p>
-            </motion.div>
+        {/* Team Member Manager Modal */}
+        <TeamMemberManager
+          showManager={showTeamManager}
+          onClose={() => setShowTeamManager(false)}
+        />
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-slate-700/50"
-            >
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mb-4">
-                <Users className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-                Team Collaboration
-              </h3>
-              <p className="text-slate-600 dark:text-slate-400">
-                Work together seamlessly with real-time updates and communication
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-slate-700/50"
-            >
-              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center mb-4">
-                <BarChart3 className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-                Analytics & Insights
-              </h3>
-              <p className="text-slate-600 dark:text-slate-400">
-                Track progress and optimize productivity with detailed analytics
-              </p>
-            </motion.div>
-          </div>
-
-          {/* Quick Stats */}
+        {/* Task Comments Modal */}
+        {showTaskComments && selectedTaskForComments && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-8 border border-white/20 dark:border-slate-700/50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowTaskComments(false)}
           >
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 text-center">
-              Your Productivity at a Glance
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">24</div>
-                <div className="text-slate-600 dark:text-slate-400">Active Tasks</div>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                  {selectedTaskForComments.title}
+                </h2>
+                <motion.button
+                  onClick={() => setShowTaskComments(false)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors duration-200"
+                >
+                  <ApperIcon name="X" className="w-6 h-6" />
+                </motion.button>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">18</div>
-                <div className="text-slate-600 dark:text-slate-400">Completed</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">5</div>
-                <div className="text-slate-600 dark:text-slate-400">Projects</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-orange-600 dark:text-orange-400 mb-2">8</div>
-                <div className="text-slate-600 dark:text-slate-400">Team Members</div>
-              </div>
-            </div>
+
+              <TaskComments
+                taskId={selectedTaskForComments.id}
+                comments={selectedTaskForComments.comments || []}
+                onUpdateComments={(updatedComments) => {
+                  // This would typically update the task in the main state
+                  // For now, we'll just update the selected task
+                  setSelectedTaskForComments({
+                    ...selectedTaskForComments,
+                    comments: updatedComments
+                  })
+                }}
+              />
+            </motion.div>
           </motion.div>
-        </div>
+        )}
+
+        <MainFeature />
       </main>
     </div>
   )
 }
-
-export default Home
